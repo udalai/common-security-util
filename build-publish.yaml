@@ -1,0 +1,29 @@
+global:
+  appCode: uxp
+  jenkinSAgent: AWS-DEV
+
+varsFormFile:
+  file: ${env.WORKSPACE}/uxp/gradle.properties
+
+gradleDocker:
+  stageName: Gradle Build
+  dockerImageVersion: 8.11.1-jdk17-alpine
+  workingDir: uxp
+  command: gradle clean jar
+
+artifactory:
+  stageName: Artifactory
+  groupId: ${vars.groupId}
+  archiveId: ${vars.archiveId}
+  version: '${vars.version}.${env.BUILD_NUMBER}'
+  fileName: uxp/build/libs/${vars.archiveId}.jar
+  repository: master
+  command: Upload
+  extension: jar
+
+archiveArtifacts:
+  artifacts: uxp/build/libs/*.jar
+
+versionTag:
+  workingDir: uxp
+  tagName: '${vars.version}.${env.BUILD_NUMBER}'

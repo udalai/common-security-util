@@ -30,12 +30,12 @@ configurations {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.cloud:spring-cloud-starter'
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.15'
+    compileOnly 'org.springframework.boot:spring-boot-starter-security'
+    compileOnly 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.springframework.cloud:spring-cloud-starter'
+    compileOnly 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    compileOnly 'org.springframework.boot:spring-boot-starter-actuator'
+    compileOnly 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.15'
     //testImplementation platform('org.junit:junit-bom:5.10.0')
     //testImplementation 'org.junit.jupiter:junit-jupiter'
     //testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -68,7 +68,7 @@ you need to disable bootJar and enable the standard jar task in this module's bu
 
 jar {
     enabled = true
-    archiveFileName = "${rootProject.name}.jar";
+    archiveFileName = "${rootProject.name}.jar"
 }
 
 bootJar {
