@@ -1,56 +1,45 @@
 package com.uma.security.api.config;
 
+import com.uma.security.api.filter.RoleBasedAuthenticationFilter;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Configuration
-public class OpenApiConfig {
-
-    private String serverUrl;
-    private String apiVersion;
-    private String apiTitle;
-    private String apiDescription;
+@EnableWebSecurity
+@EnableMethodSecurity
+public class BasicAuthSecurityConfig {
 
     @Bean
-    public OpenAPI customOpenAPI() {
-        return new OpenAPI()
-                .components(createComponents())
-                .info(createInfo())
-                .addServersItem(createServer(serverUrl))
-                .addSecurityItem(createSecurityItem());
-    }
-
-    private Components createComponents() {
-        return new Components()
-                .addSecuritySchemes(AUTHORIZATION, createSecurityScheme());
-    }
-
-    private SecurityScheme createSecurityScheme() {
-        return new SecurityScheme()
-                .name(AUTHORIZATION)
-                .type(SecurityScheme.Type.APIKEY)
-                .in(SecurityScheme.In.HEADER);
-    }
-
-    private Info createInfo() {
-        return new Info()
-                .title(apiTitle)
-                .version(apiVersion)
-                .description(apiDescription);
-    }
-
-    Server createServer(String serverUrl) {
-        return new Server().url(serverUrl);
-    }
-    private SecurityRequirement createSecurityItem() {
-        return new SecurityRequirement().addList(AUTHORIZATION);
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        return httpSecurity.csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(httpRequest -> httpRequest
+                        .requestMatchers(EndpointRequest.to("health")).permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/v3/api-docs").permitAll()
+                        .requestMatchers("/v3/api-docs/swagger-config").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .httpBasic(Customizer.withDefaults())
+                .sessionManagement(httpSecuritySessionManagementConfigurer ->
+                        httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterAfter(new RoleBasedAuthenticationFilter(), BasicAuthenticationFilter.class)
+                .build();
     }
 }

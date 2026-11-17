@@ -5,6 +5,11 @@
       <GradleProjectSettings>
         <option name="distributionType" value="LOCAL" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+          </set>
+        </option>
         <option name="myGradleHome" value="C:\Program Files\SwTools\gradle-8.5" />
       </GradleProjectSettings>
     </option>

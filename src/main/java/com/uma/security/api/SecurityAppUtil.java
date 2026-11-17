@@ -1,17 +1,42 @@
 package com.uma.security.api;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main {
-    public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
-        }
+import java.util.Map;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SecurityAppUtil {
+
+    private static Map<String, String> getUserDetailsFromSecurityContext() {
+        return (Map<String, String>) SecurityContextHolder.getContext().getAuthentication().getDetails();
     }
+
+    public static String getEmail() {
+        return getUserDetailsFromSecurityContext().get("email");
+    }
+
+
+    public static boolean isInternalUser() {
+        return getEmail().matches("(?i)^[\\w+]+@umarica\\.com$");
+    }
+
+    public static String getUserId() {
+        return getUserDetailsFromSecurityContext().get("userid");
+    }
+
+    public static String getUserName() {
+        return getUserDetailsFromSecurityContext().get("username");
+    }
+
+    public static String getRoles() {
+        return getUserDetailsFromSecurityContext().get("roles");
+    }
+
+    public static boolean isExternal() {
+        return !isInternalUser();
+    }
+
+
 }
